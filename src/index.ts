@@ -21,7 +21,7 @@ export type Pipe ={pipe: FD[], done: (err?: boolean)=>void};
 export type Arg = {pipe: FD[], done: (err?: boolean)=>void};
 export type Plugin = {[key: string]: FP};
 type FPipe = (arg: FArray) => FArray;
-export type FP = Generator<Arg, Arg, Arg>|((arg0: Arg) => Arg);
+export type FP = AsyncGenerator<Arg, Arg, Arg>|((arg0: Arg) => Promise<Arg>);
 //type F = FD|FArray;
 export type FArray = (FPipe|FArray)[];
 export type Namespace = Record<string,Generator|AsyncGenerator|((arg0: Data)=>any)>;

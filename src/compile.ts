@@ -1,11 +1,11 @@
-import { type Namespace, type Plugin, type FD, type Data, FP, Arg } from '.';
+import { type Namespace, type Plugin, type FD, type Data, Arg, Pipe } from '.';
 import { parse, ParsedArray } from './parse';
 import {pipe as s} from './pipe';
 
 import p from './parallel';
 import nr from './nr';
-import retry from './retry';
-import _catch from './catch';
+//import retry from './retry';
+//import _catch from './catch';
 import repeat from './repeat';
 
 const wrap = (m: FD|AsyncGenerator|Generator) => {
@@ -25,7 +25,7 @@ const wrap = (m: FD|AsyncGenerator|Generator) => {
 
 };
 
-function done(err=false){
+function done(){
     //
 }
 
@@ -38,22 +38,17 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
         const pipePipe = (plugins: string[]) =>{
             const wrapped = plugins.map(name => {
                 if(name === 'nr') return nr();
-                if(name === 'p') return p();
-                /*
-                if(name === 'p') return p();
-                else if(name === 's') return s;
-                else if(name === 'nr') return  nr();
-                else if(/^\d+$/.test(name)){
-                    return repeat(parseInt(name));
-                }
-                else {*/
+                else if(name === 'p') return p();
+                else if(name === 's') return (x: Pipe)=>x;
+                else if(/^\d+$/.test(name)) return repeat(parseInt(name));
+                else {
                     const plugin = opts.plugins[name];
                     if(plugin === undefined) throw new Error("Key Error: plugin namespace error: " + name);
                     if(typeof plugin === 'function') return plugin;
                     else{
                         plugin.next();
-                        return (arg: Arg) =>  plugin.next(arg).value;
-                    //}
+                        return async (arg: Arg) =>  (await plugin.next(arg)).value;
+                    }
                 }
             });
             return async (pipe: Arg) => {
@@ -63,30 +58,7 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                 }
                 return pipe;
             };
-        }; 
-
-        /*
-        function compose(plugins: string[]){
-            if(plugins.length === 0) return s;
-            return (f: FD[]) => {
-                for(const name of plugins.reverse()){
-                    let plugin;
-                    if(name === 'p') plugin = p();
-                    else if(name === 's') plugin = s;
-                    else if(name === 'nr') plugin = nr();
-                    else if(/^\d+$/.test(name)){
-                        plugin = repeat(parseInt(name));
-                    }
-                    else{
-                        plugin = opts.plugins[name];
-                        if(plugin === undefined) throw new Error("Key Error: plugin namespace error: " + name);
-                    }
-                    f = [plugin(f)];     
-                }
-                return f[0];
-            } ;
-        }
-        */
+        };
 
         const buildAtom = (a: string) => {
             const m = opts.namespace[a];

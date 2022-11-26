@@ -1,7 +1,7 @@
 import { watch as chwatch } from 'chokidar';
 import { emitKeypressEvents } from 'node:readline';
 
-import { type Data, type FD } from '.';
+import { Pipe, type Data} from '.';
 
 export const SHOW_QUIT_MESSAGE = {v: false};
 export const DEBUG = {v: false};
@@ -9,17 +9,11 @@ export const DEBUG = {v: false};
 emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
-export default (files: string[]) => (pipes: FD[]) => async (data: Data) => {
+export default (files: string[]) => async ({pipe, done}: Pipe) => {
 
-    const quit = data.ctx.close;
+    const main = (data: Data) => {
+        const quit = data.ctx.close;
 
-    try{
-        return await main();
-    }catch(err){
-        return false;
-    }
-
-    function main(){
         const q = 'q';
         const h = (ch: string) => {
             if(ch === q){
@@ -62,7 +56,7 @@ export default (files: string[]) => (pipes: FD[]) => async (data: Data) => {
         async function run(){
             try{
                 data = {data: data.data, ctx: {close}};
-                await pipes[0](data);
+                await pipe[0](data);
                 if(SHOW_QUIT_MESSAGE.v)
                     // eslint-disable-next-line no-console
                     console.log("Press " + q + " to quit!");
@@ -88,5 +82,7 @@ export default (files: string[]) => (pipes: FD[]) => async (data: Data) => {
             exitedRun();
         }
         return p;
-    }
+    };
+
+    return {pipe: [main], done};
 };
