@@ -95,20 +95,19 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
             });
 
             async function pipePipe(plugins: string[], pipe: Pipe, data: Data): Promise<any>{
-                if(plugins.length === 0){
+                //if(plugins.length === 0){
+                if(plugins[0] === 's'){
                     const _p = pipe.pipe;
                     if(_p) return await _p[0](data);
                 }else{
                     const name = plugins[0];
                     if(/^\d+$/.test(name)){
-                        const p = await repeat(parseInt(name))(pipe);
-                        return pipePipe(plugins.slice(1), p, data);
+                        const _r = await repeat(parseInt(name))(pipe);
+                        return pipePipe(plugins.slice(1), _r, data);
+                    }else if(name === 'p'){
+                        const _p = await p()(pipe);
+                        return pipePipe(plugins.slice(1), _p, data);
                     }
-                    //
-                    //if(name === 'nr'){
-                    //    const x = (await nr()(pipe).next()).value;
-
-                    //}
                     //else if(name === 'p') return p();
                     //else if(name === 's') return (x: Pipe)=>x;
                     //else if(/^\d+$/.test(name)) return repeat(parseInt(name));
