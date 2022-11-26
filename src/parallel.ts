@@ -1,7 +1,7 @@
 import { Pipe, Data } from '.';
 
 export default (mode: "all"|"race"|"allSettled" = "all", 
-                map: ((data: Data)=>any)|null = null)  => async ({pipe: pipes, done}: Pipe) => {
+                map: ((data: Data)=>any)|null = null)  => async ({pipe: pipes}: Pipe) => {
     
 
     async function parallel(data: Data){
@@ -20,14 +20,14 @@ export default (mode: "all"|"race"|"allSettled" = "all",
             //else if (mode === "any") return await Promise.any(promises);
             else if (mode === "race") result = await Promise.race(promises);
             else if (mode === "allSettled") result = await Promise.allSettled(promises);
-            done();
+            //done();
             return result;
         }catch(err){
-            done(true);
+            //done(true);
             const msg = err instanceof Error ? err.message: "";
             throw new Error(data.data + msg);
         }
     }
 
-    return {pipe: [parallel], done};
+    return {pipe: [parallel]};
 };

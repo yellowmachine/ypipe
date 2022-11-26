@@ -1,13 +1,12 @@
 import { Pipe } from '.';
 
-export default (n: number) => (pipe: Pipe) => {
-    for(;;){
-        try{
-            return pipe;
-        }catch(err){
-            //done();
+export default (n: number) => {
+    //const initial = n;
+    return function *(pipe: Pipe){
+        do{
             n--;
-            if(n === 0) return {pipe: [], done: pipe.done};
-        }    
-    } 
-};
+            yield pipe;
+        }while(n > 0);
+        return null;
+    };
+}; 

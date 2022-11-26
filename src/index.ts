@@ -16,12 +16,13 @@ export type FD = (data: Data)=>Promise<any>;
 export type SETUP = {single: FD, multiple: FD[]};
 export type PluginBase = (pipes: FD[]) => FD;
 
-export type Pipe ={pipe: FD[], done: (err?: boolean)=>void}; 
+//export type Pipe ={pipe: FD[], done: (err?: boolean)=>void}; 
+export type Pipe ={pipe: FD[]}; 
 
-export type Arg = {pipe: FD[], done: (err?: boolean)=>void};
+export type Arg = {pipe: FD[]/*, done: (err?: boolean)=>void*/};
 export type Plugin = {[key: string]: FP};
 type FPipe = (arg: FArray) => FArray;
-export type FP = AsyncGenerator<Arg, Arg, Arg>|((arg0: Arg) => Promise<Arg>);
+export type FP = AsyncGenerator<Pipe, Pipe, Pipe>|((arg0: Pipe) => Promise<Pipe>);
 //type F = FD|FArray;
 export type FArray = (FPipe|FArray)[];
 export type Namespace = Record<string,Generator|AsyncGenerator|((arg0: Data)=>any)>;

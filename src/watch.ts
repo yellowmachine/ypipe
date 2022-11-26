@@ -9,7 +9,7 @@ export const DEBUG = {v: false};
 emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
-export default (files: string[]) => async ({pipe, done}: Pipe) => {
+export default (files: string[]) => async ({pipe}: Pipe) => {
 
     const main = (data: Data) => {
         const quit = data.ctx.close;
@@ -84,5 +84,5 @@ export default (files: string[]) => async ({pipe, done}: Pipe) => {
         return p;
     };
 
-    return {pipe: [main], done};
+    return {pipe: [main]};
 };
