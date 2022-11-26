@@ -1,11 +1,7 @@
-import { Data, FD } from '.';
+import { Pipe } from '.';
+import parallel from './parallel';
 
-export default (n: number) => (pipes: FD[]) => async (data: Data) => {
-    const promises: Promise<boolean>[] = [];
+const repeat = (arr: Pipe["pipe"], n: number) => Array(n).fill(arr).flat();
 
-    while(n--){
-        const p = pipes[0](data);
-        promises.push(p);
-    }
-    return await Promise.all(promises);
-};
+export default (n: number) => async ({pipe, done}: Pipe) =>  
+    parallel()({pipe: repeat(pipe, n), done});

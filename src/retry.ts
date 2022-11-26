@@ -1,15 +1,14 @@
-import { Data, FD } from '.';
+import { Pipe } from '.';
 
-export default (n: number) => (pipe: FD[]) => async (data: Data) => {
-    
-    const initialData = data.data;
-    
-    for(;;){        
+export default (n: number) => ({pipe, done}: Pipe) => {
+    for(;;){
         try{
-            return await pipe[0]({...data, data: initialData}); 
+            return {pipe, done};
         }catch(err){
+            done(true);
             n--;
             if(n === 0) throw err;
         }    
     } 
 };
+

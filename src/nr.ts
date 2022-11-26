@@ -1,4 +1,4 @@
-import { Arg, FD } from '.';
+import { Pipe, FD } from '.';
 export type MODE = "buffer"|"nobuffer"|"custom";
 export type BFUNC = null|((arg: BufferData[]) => BufferData[]);
 
@@ -26,13 +26,11 @@ function createResolve(){
     return {resolve, reject, promise: p};
 }
 
-//type Arg = {pipe: FD[], done: (err?: boolean)=>void};
-
 export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"}) => {
     let exited = true;
     const buffer: BufferData[] = [];
 
-    return async ({pipe, done}: Arg) => {
+    return async ({pipe, done}: Pipe) => {
         function _done(err=false){
             exited = true;
             if(err){

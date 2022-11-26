@@ -1,7 +1,7 @@
-import { Arg, Data, FD } from '.';
+import { Pipe, Data } from '.';
 
 export default (mode: "all"|"race"|"allSettled" = "all", 
-                map: ((data: Data)=>any)|null = null)  => async ({pipe: pipes, done}: Arg) => {
+                map: ((data: Data)=>any)|null = null)  => async ({pipe: pipes, done}: Pipe) => {
     
 
     async function parallel(data: Data){
@@ -27,8 +27,7 @@ export default (mode: "all"|"race"|"allSettled" = "all",
             const msg = err instanceof Error ? err.message: "";
             throw new Error(data.data + msg);
         }
-        //return false;
     }
 
-    return {pipe: [(data: Data) => parallel(data)], done};
+    return {pipe: [parallel], done};
 };
