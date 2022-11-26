@@ -16,7 +16,7 @@ export type FD = (data: Data)=>Promise<any>;
 export type SETUP = {single: FD, multiple: FD[]};
 export type PluginBase = (pipes: FD[]) => FD;
 
-export type Arg = {pipe: FD[], data: Data, done: (err?: boolean)=>void};
+export type Arg = {pipe: FD[], done: (err?: boolean)=>void};
 export type Plugin = {[key: string]: FP};
 type FPipe = (arg: FArray) => FArray;
 export type FP = Generator<Arg, Arg, Arg>|((arg0: Arg) => Arg);

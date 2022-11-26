@@ -1,10 +1,10 @@
-import { Data, FD } from '.';
+import { Arg, FD } from '.';
 export type MODE = "buffer"|"nobuffer"|"custom";
 export type BFUNC = null|((arg: BufferData[]) => BufferData[]);
 
 type Resolve = (null|((arg0: (any)) => void));
 type Reject = (null|(() => void));
-type BufferData = {resolve: Resolve, reject: Reject, data: Data, pipe: FD[]};
+type BufferData = {resolve: Resolve, reject: Reject, pipe: FD[]};
 
 function createResolve(){
     let innerResolve: Resolve = null;
@@ -26,13 +26,13 @@ function createResolve(){
     return {resolve, reject, promise: p};
 }
 
-type Arg = {pipe: FD[], data: Data, done: (err?: boolean)=>void};
+//type Arg = {pipe: FD[], done: (err?: boolean)=>void};
 
 export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"}) => {
     let exited = true;
     const buffer: BufferData[] = [];
-    
-    return async ({pipe, data, done}: Arg) => {
+
+    return async ({pipe, done}: Arg) => {
         function _done(err=false){
             exited = true;
             if(err){
@@ -51,9 +51,10 @@ export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"})
         if(!exited){
             if(mode === "buffer" && (size === undefined || buffer.length < size - 1)){
                 const x = createResolve();
-                buffer.push({...x, data, pipe: pipe});
+                buffer.push({...x, pipe: pipe});
                 try{
                     await x.promise; 
+                    return {pipe, done: _done};
                 }catch(err){
                     if(buffer.length > 0){
                         const {reject} = buffer.pop() as BufferData;
@@ -62,11 +63,12 @@ export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"})
                     throw err;        
                 }
             }else{
-                return null;
+                //return null;
+                return {pipe: [], done: _done};
             }
         }else{
             exited = false;
-            return {pipe, data, done: _done};
+            return {pipe, done: _done};
         }
-};
+    };
 };

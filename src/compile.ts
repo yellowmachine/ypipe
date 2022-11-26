@@ -37,6 +37,8 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
 
         const pipePipe = (plugins: string[]) =>{
             const wrapped = plugins.map(name => {
+                if(name === 'nr') return nr();
+                if(name === 'p') return p();
                 /*
                 if(name === 'p') return p();
                 else if(name === 's') return s;
@@ -56,13 +58,10 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
             });
             return async (pipe: Arg) => {
                 for(const plugin of wrapped){
-                    pipe = plugin(pipe);
+                    pipe = await plugin(pipe);
                     //if(pipe === null) return null;
                 }
                 return pipe;
-                //const response = await s(pipe.pipe);
-                //pipe.done();
-                //return response;
             };
         }; 
 
@@ -121,7 +120,7 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                 }
             });
             return async (data: Data) => {
-                const {pipe, done: _done} = await pipePipe(arr.plugins)({pipe: pipes, data, done});
+                const {pipe, done: _done} = await pipePipe(arr.plugins)({pipe: pipes, done});
                 try{
                     const v = await pipe[0](data);
                     _done();
