@@ -1,0 +1,59 @@
+{
+  "name": "ypipe",
+  "version": "0.1.0",
+  "description": "pipe tasks",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "eslint . --ext .ts",
+    "test": "jest --config jestconfig.json --detectOpenHandles ",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "git add -A src",
+    "postversion": "git push && git push --tags",
+    "check-updates": "npx npm-check-updates",
+    "check-updates:minor": "npx npm-check-updates --target minor",
+    "check-updates:patch": "npx npm-check-updates --target patch"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "keywords": [
+    "typescript",
+    "npm",
+    "template",
+    "ts"
+  ],
+  "author": "Miguel Ángel Alarcos Torrecillas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yellowmachine/ypipe/issues"
+  },
+  "homepage": "https://github.com/yellowmachine/ypipe#readme",
+  "devDependencies": {
+    "@types/jest": "^28.1.7",
+    "@types/node": "^18.7.8",
+    "@typescript-eslint/eslint-plugin": "^5.33.1",
+    "@typescript-eslint/parser": "^5.33.1",
+    "ansi-regex": ">=6.0.1",
+    "eslint": "^8.22.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "jest": "^28.1.3",
+    "ts-jest": "^28.0.8",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "chokidar": "^3.5.3"
+  }
+}
