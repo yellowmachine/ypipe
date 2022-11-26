@@ -96,11 +96,14 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
 
             async function pipePipe(plugins: string[], pipe: Pipe, data: Data): Promise<any>{
                 if(plugins.length === 0){
-                    const response = await pipe.pipe[0](data);
-                    //pipe.done(); 
-                    return response;
+                    const _p = pipe.pipe;
+                    if(_p) return await _p[0](data);
                 }else{
                     const name = plugins[0];
+                    if(/^\d+$/.test(name)){
+                        const p = await repeat(parseInt(name))(pipe);
+                        return pipePipe(plugins.slice(1), p, data);
+                    }
                     //
                     //if(name === 'nr'){
                     //    const x = (await nr()(pipe).next()).value;
@@ -121,6 +124,7 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                         for(;;){
                             pipe = (await plugin.next(pipe)).value;
                             if(pipe === null) throw _err;
+                            if(pipe.pipe === null) return null;
                             try{
                                 return pipePipe(plugins.slice(1), pipe, data);
                             }catch(err){

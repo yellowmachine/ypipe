@@ -1,17 +1,11 @@
 import { Pipe } from '.';
 
 export default (n: number) => {
-    const initial = n;
-    return ({pipe}: Pipe) => {
-        function _done(err=false){
-            if(err){
-                n--;
-                if(n === 0) throw err;
-                return {pipe, done: _done};
-            }else{
-                n = initial;
-            }
-        }
-        return {pipe, done: _done};
+    return function *(pipe: Pipe){
+        do{
+            n--;
+            yield pipe;
+        }while(n > 0);
+        return null;
     };
 }; 
