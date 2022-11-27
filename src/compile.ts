@@ -64,10 +64,10 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                 }
             });
 
-            const arrPlugins = arr.plugins.map(name => {
-                /*if(name === 'nr'){
+            const compiledPlugins = arr.plugins.map(name => {
+                if(name === 'nr'){
                     return nr();
-                }else if(/^\d+$/.test(name)){
+                }/*else if(/^\d+$/.test(name)){
                     return repeat(parseInt(name));
                 }else if(name === 'p'){
                     return p();
@@ -80,10 +80,10 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
             });
 
             function next(i: number, data: Data){
-                if(i === arrPlugins.length){
+                if(i === compiledPlugins.length){
                     return () => s(pipes)(data);
                 }
-                const plugin = arrPlugins[i];
+                const plugin = compiledPlugins[i];
                 return (): Promise<any> => {
                     return plugin(next(i+1, data));
                 };
