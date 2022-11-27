@@ -65,20 +65,19 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
             });
 
             const arrPlugins = arr.plugins.map(name => {
-                if(name === 'nr'){
+                /*if(name === 'nr'){
                     return nr();
                 }else if(/^\d+$/.test(name)){
                     return repeat(parseInt(name));
                 }else if(name === 'p'){
                     return p();
                 }else{
+                */
                     const plugin = opts.plugins[name];
                     if(plugin === undefined) throw new Error("Key Error: plugin namespace error: " + name);                    
                     return plugin;
-                }
+                //}
             });
-
-            const x: Next;
 
             function next(i: number, data: Data): () => any{
                 if(i === arrPlugins.length){
