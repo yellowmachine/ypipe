@@ -7,6 +7,7 @@ import nr from './nr';
 //import retry from './retry';
 //import _catch from './catch';
 import repeat from './repeat';
+import parallel from './parallel';
 
 const wrap = (m: FD|AsyncGenerator|Generator) => {
     if(typeof m === 'function'){
@@ -79,14 +80,16 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                 //}
             });
 
-            function next(i: number, data: Data){
+            function next(i: number, data: Data): () => Promise<any>{
+                if(arr.plugins[i] === 'p'){
+                    return () => parallel()(pipes)(data);
+                }
                 if(i === compiledPlugins.length){
                     return () => s(pipes)(data);
                 }
                 const plugin = compiledPlugins[i];
-                return (): Promise<any> => {
-                    return plugin(next(i+1, data));
-                };
+                const _next = next(i+1, data);
+                return () => plugin(_next);
             }
 
             return (data: Data) => {
