@@ -19,11 +19,12 @@ export type PluginBase = (pipes: FD[]) => FD;
 export type Pipe ={pipe: FD[]|null}; 
 
 export type Arg = {pipe: FD[]/*, done: (err?: boolean)=>void*/};
-export type Plugin = {[key: string]: Next};
+export type Plugin = {[key: string]: (arg: Next)=>any};
 type FPipe = (arg: FArray) => FArray;
 
 //export type Next = {next: () => any};
-export type Next = ({next}:{next: () => any}) => any; //{next: () => any};
+//export type Next = ({next}:{next: () => any}) => any;
+export type Next = () => any;
 export type FP = AsyncGenerator<Pipe, Pipe, Pipe>|((arg0: Pipe) => Promise<Pipe>);
 //type F = FD|FArray;
 export type FArray = (FPipe|FArray)[];

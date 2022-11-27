@@ -1,24 +1,27 @@
-import { Pipe } from '.';
+import { Next, Pipe } from '.';
 
 export type MODE = "buffer"|"nobuffer"|"custom";
 
 export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"}) => {
     let exited = true;
-    const buffer: Pipe[] = [];
+    const buffer: (()=>any)[] = [];
 
-    return async function *(pipe: Pipe){
+    return async function (next: Next){
         if(exited){
             exited = false;
+            let ret;
             do{
-                yield pipe;
-                const x = buffer.pop();
-                if(x) pipe = x;
+                ret = await next();
+                const _next = buffer.pop();
+                if(_next) next = _next;
+                //else break;
             }
             while(buffer.length > 0);
             exited = true;
+            return ret;
         }else{
             if(size === undefined || buffer.length < size)
-                buffer.push(pipe);
+                buffer.push(next);
             return null;
         }
     };

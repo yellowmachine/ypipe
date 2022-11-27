@@ -79,18 +79,18 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                 //}
             });
 
-            function next(i: number, data: Data): () => any{
+            function next(i: number, data: Data){
                 if(i === arrPlugins.length){
                     return () => s(pipes)(data);
                 }
                 const plugin = arrPlugins[i];
-                return (): any => {
-                    return plugin({next: next(i+1, data)});
+                return (): Promise<any> => {
+                    return plugin(next(i+1, data));
                 };
             }
 
-            return async (data: Data) => {
-                return await next(0, data)();
+            return (data: Data) => {
+                return next(0, data)();
             };
         };
 
