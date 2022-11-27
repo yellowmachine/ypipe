@@ -80,20 +80,20 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                 //}
             });
 
-            function next(i: number, data: Data): () => Promise<any>{
+            function next(i: number, data: Data, pipe: FD[]): Promise<any>{
+                const _next = (_pipe?: FD[]) => next(i+1, data, _pipe || pipe);
                 if(arr.plugins[i] === 'p'){
-                    return () => parallel()(pipes)(data);
+                    return parallel()(_next, pipe);
                 }
                 if(i === compiledPlugins.length){
-                    return () => s(pipes)(data);
+                    return s(pipe)(data);
                 }
                 const plugin = compiledPlugins[i];
-                const _next = next(i+1, data);
-                return () => plugin(_next);
+                return plugin(_next, pipe);
             }
 
             return (data: Data) => {
-                return next(0, data)();
+                return next(0, data, pipes);
             };
         };
 

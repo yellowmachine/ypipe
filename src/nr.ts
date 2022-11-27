@@ -1,4 +1,4 @@
-import { Next, Pipe } from '.';
+import { Next, FD } from '.';
 
 export type MODE = "buffer"|"nobuffer"|"custom";
 
@@ -6,7 +6,7 @@ export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"})
     let exited = true;
     const buffer: Next[] = [];
 
-    return async function (next: Next){
+    return async function (next: Next, pipe: FD[]){
         if(exited){
             exited = false;
             let ret;

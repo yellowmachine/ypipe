@@ -1,14 +1,14 @@
-import { Data, FD } from '.';
+import { FD, Next, Data } from '.';
 
 export default (mode: "all"|"race"|"allSettled" = "all", 
-                map: ((data: Data)=>any)|null = null) => (pipes: FD[]) => async (data: Data) => {
+                map: ((data: Data)=>any)|null = null) => async (next: Next, pipes: FD[]) => {
     
     const promises: Promise<any>[] = [];   
 
     pipes = pipes || [];
-    for(const t of pipes){
-        if(map) data = {ctx: data.ctx, data: map(data.data)};
-        promises.push(t(data));
+    for(const pipe of pipes){
+        //if(map) data = {ctx: data.ctx, data: map(data.data)};
+        promises.push(next([pipe]));
     }
     try{
         let result;
@@ -21,6 +21,6 @@ export default (mode: "all"|"race"|"allSettled" = "all",
         return result;
     }catch(err){
         const msg = err instanceof Error ? err.message: "";
-        throw new Error(data.data + msg);
+        throw new Error(msg);
     }
 };
