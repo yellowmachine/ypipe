@@ -1,12 +1,13 @@
-import { Pipe } from '.';
+import { Next } from '.';
 
-export default (n: number) => {
-
-    return function *(pipe: Pipe){
-        do{
+export default (n: number) => async (next: Next) => {
+    do{
+        try{
             n--;
-            yield pipe;
-        }while(n > 0);
-        yield {pipe: null};
-    };
+            return await next();
+        }catch(err){
+            //
+        }
+    }while(n > 0);
+    return null;
 }; 

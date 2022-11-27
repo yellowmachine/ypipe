@@ -1,13 +1,10 @@
 import { FD, Next, Data } from '.';
 
-export default (mode: "all"|"race"|"allSettled" = "all", 
-                map: ((data: Data)=>any)|null = null) => async (next: Next, pipes: FD[]) => {
+export default (mode: "all"|"race"|"allSettled" = "all") => async (next: Next, pipes: FD[]) => {
     
     const promises: Promise<any>[] = [];   
 
-    pipes = pipes || [];
     for(const pipe of pipes){
-        //if(map) data = {ctx: data.ctx, data: map(data.data)};
         promises.push(next([pipe]));
     }
     try{
