@@ -1,4 +1,4 @@
-import { type Namespace, type Plugin, type FD, type Data, Arg, Pipe } from '.';
+import { type Namespace, type Plugin, type FD, type Data, Next } from '.';
 import { parse, ParsedArray } from './parse';
 import {pipe as s} from './pipe';
 
@@ -25,42 +25,11 @@ const wrap = (m: FD|AsyncGenerator|Generator) => {
 
 };
 
-function done(){
-    //
-}
-
 export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
 
     const rootParsed = parse(raw);
     
     function _compile(parsed: ParsedArray){
-
-        /*
-        const pipePipe = (plugins: string[]) =>{
-            const wrapped = plugins.map(name => {
-                if(name === 'nr') return nr();
-                else if(name === 'p') return p();
-                else if(name === 's') return (x: Pipe)=>x;
-                else if(/^\d+$/.test(name)) return repeat(parseInt(name));
-                else {
-                    const plugin = opts.plugins[name];
-                    if(plugin === undefined) throw new Error("Key Error: plugin namespace error: " + name);
-                    if(typeof plugin === 'function') return plugin;
-                    else{
-                        plugin.next();
-                        return async (arg: Arg) =>  (await plugin.next(arg)).value;
-                    }
-                }
-            });
-
-            return async (pipe: Arg) => {
-                for(const plugin of wrapped){
-                    pipe = await plugin(pipe);
-                    //if(pipe === null) return null;
-                }
-                return pipe;
-            };
-        };*/
 
         const buildAtom = (a: string) => {
             const m = opts.namespace[a];
@@ -70,6 +39,7 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
         };
 
         const buildArray = (arr: ParsedArray): FD => {
+
             const pipes = arr.c.map(sub=>{
                 if(sub.type === 'array'){
                     const f = buildArray(sub);
@@ -94,48 +64,34 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                 }
             });
 
-            async function pipePipe(plugins: string[], pipe: Pipe, data: Data): Promise<any>{
-                //if(plugins.length === 0){
-                if(plugins[0] === 's'){
-                    const _p = pipe.pipe;
-                    if(_p) return await _p[0](data);
+            const arrPlugins = arr.plugins.map(name => {
+                if(name === 'nr'){
+                    return nr();
+                }else if(/^\d+$/.test(name)){
+                    return repeat(parseInt(name));
+                }else if(name === 'p'){
+                    return p();
                 }else{
-                    const name = plugins[0];
-                    if(/^\d+$/.test(name)){
-                        const _r = await repeat(parseInt(name))(pipe);
-                        return pipePipe(plugins.slice(1), _r, data);
-                    }else if(name === 'p'){
-                        const _p = await p()(pipe);
-                        return pipePipe(plugins.slice(1), _p, data);
-                    }
-                    //else if(name === 'p') return p();
-                    //else if(name === 's') return (x: Pipe)=>x;
-                    //else if(/^\d+$/.test(name)) return repeat(parseInt(name));
-                    //
                     const plugin = opts.plugins[name];
                     if(plugin === undefined) throw new Error("Key Error: plugin namespace error: " + name);                    
-                    if(typeof plugin === 'function'){
-                        pipe = await plugin(pipe);
-                        return pipePipe(plugins.slice(1), pipe, data);
-                    }
-                    else{
-                        let _err;
-                        for(;;){
-                            pipe = (await plugin.next(pipe)).value;
-                            if(pipe === null) throw _err;
-                            if(pipe.pipe === null) return null;
-                            try{
-                                return pipePipe(plugins.slice(1), pipe, data);
-                            }catch(err){
-                                _err = err;
-                            }
-                        }
-                    }
+                    return plugin;
                 }
+            });
+
+            const x: Next;
+
+            function next(i: number, data: Data): () => any{
+                if(i === arrPlugins.length){
+                    return () => s(pipes)(data);
+                }
+                const plugin = arrPlugins[i];
+                return (): any => {
+                    return plugin({next: next(i+1, data)});
+                };
             }
 
             return async (data: Data) => {
-                return pipePipe(arr.plugins, {pipe: pipes/*, done*/}, data);
+                return await next(0, data)();
             };
         };
 

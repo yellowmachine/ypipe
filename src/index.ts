@@ -1,5 +1,4 @@
 import _compile from './compile';
-//import { Tpipe } from './pipe';
 export {default as w, SHOW_QUIT_MESSAGE} from './watch';
 export {default as p} from './parallel';
 export {default as sw} from './switch';
@@ -20,8 +19,11 @@ export type PluginBase = (pipes: FD[]) => FD;
 export type Pipe ={pipe: FD[]|null}; 
 
 export type Arg = {pipe: FD[]/*, done: (err?: boolean)=>void*/};
-export type Plugin = {[key: string]: FP};
+export type Plugin = {[key: string]: Next};
 type FPipe = (arg: FArray) => FArray;
+
+//export type Next = {next: () => any};
+export type Next = ({next}:{next: () => any}) => any; //{next: () => any};
 export type FP = AsyncGenerator<Pipe, Pipe, Pipe>|((arg0: Pipe) => Promise<Pipe>);
 //type F = FD|FArray;
 export type FArray = (FPipe|FArray)[];

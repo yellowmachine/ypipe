@@ -1,11 +1,22 @@
 import { Pipe } from '.';
 
 export default (n: number) => {
-    return function *(pipe: Pipe){
+    /*function *f(pipe: Pipe){
         do{
             n--;
-            yield pipe;
+            pipe = yield pipe;
         }while(n > 0);
         return null;
-    };
+    }
+    return f({pipe: []});
+    */
+    function *f(){
+        let pipe: Pipe = yield;
+        do{
+            n--;
+            pipe = yield pipe;
+        }while(n > 0);
+        return null;
+    }
+    return f();
 }; 

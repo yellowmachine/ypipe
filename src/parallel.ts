@@ -8,6 +8,7 @@ export default (mode: "all"|"race"|"allSettled" = "all",
 
         const promises: Promise<any>[] = [];   
     
+        pipes = pipes || [];
         for(const t of pipes){
             if(map) data = {ctx: data.ctx, data: map(data.data)};
             promises.push(t(data));
