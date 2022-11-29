@@ -32,7 +32,7 @@ test("run a|b a!", async ()=>{
 
 });
 
-test("run a,c|b a!", async ()=>{
+test.only("run a,c|b a!", async ()=>{
     const a = g('a!');
     const b = g('b');
     const c = g('c');

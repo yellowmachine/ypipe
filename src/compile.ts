@@ -1,4 +1,4 @@
-import { type Namespace, type Plugin, type FD, type Data, Next } from '.';
+import { type Namespace, type Plugin, type FD, type Data } from '.';
 import { parse, ParsedArray } from './parse';
 import {pipe as s} from './pipe';
 
@@ -7,7 +7,6 @@ import nr from './nr';
 //import retry from './retry';
 //import _catch from './catch';
 import repeat from './repeat';
-import parallel from './parallel';
 
 const wrap = (m: FD|AsyncGenerator|Generator) => {
     if(typeof m === 'function'){
@@ -44,23 +43,9 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
             const pipes = arr.c.map(sub=>{
                 if(sub.type === 'array'){
                     const f = buildArray(sub);
-                    /*if(arr.retryType === '?'){
-                        f = _catch(arr.retry || 1)([f]);
-                    }else if(arr.retryType === '!'){
-                        f = retry(arr.retry || 1)([f]);
-                    }
-                    if(arr.repeat)
-                        f = repeat(arr.repeat)([f]);
-                    */
                     return f;
                 }else{
                     const f = wrap(buildAtom(sub.name));
-                    /*if(sub.catched) f = _catch(1)([f]);
-                    if(sub.plugins.length > 0){
-                        const composed = compose(sub.plugins);
-                        f = composed([f]);
-                    }
-                    */
                     return f;
                 }
             });
@@ -70,27 +55,32 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                     return nr();
                 }else if(/^\d+$/.test(name)){
                     return repeat(parseInt(name));
-                }else{
+                }else if(name === 'p' || name === 's') return name;
+                else{
                     const plugin = opts.plugins[name];
                     if(plugin === undefined) throw new Error("Key Error: plugin namespace error: " + name);                    
                     return plugin;
                 }
             });
 
-            function next(i: number, data: Data, pipe: FD[]): Promise<any>{
-                const _next = (_pipe?: FD[], _data?: Data) => next(i+1, _data || data, _pipe || pipe);
-                if(arr.plugins[i] === 'p'){
-                    return parallel()(_next, pipe);
-                }
+            function next(i: number, pipe: FD[], data: Data): Promise<any>{
+                const _next = (_pipe?: FD[], _data?: Data) => next(i+1, _pipe || pipe, _data || data);
                 if(i === compiledPlugins.length){
                     return s(pipe)(data);
                 }
                 const plugin = compiledPlugins[i];
-                return plugin(_next, pipe, data);
+                if(plugin === 'p'){
+                    return p()(_next, pipe);
+                }else if(plugin === 's'){
+                    return s(pipe)(data);
+                }
+                else{
+                    return plugin(_next, pipe, data);
+                }
             }
 
             return (data: Data) => {
-                return next(0, data, pipes);
+                return next(0, pipes, data);
             };
         };
 
