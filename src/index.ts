@@ -24,7 +24,7 @@ type FPipe = (arg: FArray) => FArray;
 
 //export type Next = {next: () => any};
 //export type Next = ({next}:{next: () => any}) => any;
-export type Next = (f?: FD[]) => Promise<any>;
+export type Next = (f?: FD[], data?: Data) => Promise<any>;
 export type FP = AsyncGenerator<Pipe, Pipe, Pipe>|((arg0: Pipe) => Promise<Pipe>);
 //type F = FD|FArray;
 export type FArray = (FPipe|FArray)[];

@@ -68,20 +68,17 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
             const compiledPlugins = arr.plugins.map(name => {
                 if(name === 'nr'){
                     return nr();
-                }/*else if(/^\d+$/.test(name)){
+                }else if(/^\d+$/.test(name)){
                     return repeat(parseInt(name));
-                }else if(name === 'p'){
-                    return p();
                 }else{
-                */
                     const plugin = opts.plugins[name];
                     if(plugin === undefined) throw new Error("Key Error: plugin namespace error: " + name);                    
                     return plugin;
-                //}
+                }
             });
 
             function next(i: number, data: Data, pipe: FD[]): Promise<any>{
-                const _next = (_pipe?: FD[]) => next(i+1, data, _pipe || pipe);
+                const _next = (_pipe?: FD[], _data?: Data) => next(i+1, _data || data, _pipe || pipe);
                 if(arr.plugins[i] === 'p'){
                     return parallel()(_next, pipe);
                 }
