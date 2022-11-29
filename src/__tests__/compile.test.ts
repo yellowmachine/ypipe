@@ -32,7 +32,7 @@ test("run a|b a!", async ()=>{
 
 });
 
-test.only("run a,c|b a!", async ()=>{
+test("run a,c|b a!", async ()=>{
     const a = g('a!');
     const b = g('b');
     const c = g('c');
@@ -97,10 +97,10 @@ test("run 3'^[a|b]", async ()=>{
     });
 
     const result = await cmp("");
-    expect(result).toEqual(["ab", null, null]);
+    expect(result).toEqual(["aba2b2a3b3", null, null]);
 });
 
-test("run 3'buffer'[a|b]", async ()=>{
+test.skip("run 3'buffer'[a|b]", async ()=>{
     const a = g('a,a2,a3');
     const b = g('b,b2,b3');
 

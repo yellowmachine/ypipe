@@ -4,8 +4,8 @@ import {pipe as s} from './pipe';
 
 import p from './parallel';
 import nr from './nr';
-//import retry from './retry';
-//import _catch from './catch';
+import retry from './retry';
+import _catch from './catch';
 import repeat from './repeat';
 
 const wrap = (m: FD|AsyncGenerator|Generator) => {
@@ -43,6 +43,8 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
             const pipes = arr.c.map(sub=>{
                 if(sub.type === 'array'){
                     const f = buildArray(sub);
+                    if(sub.retryType === '?') arr.plugins.unshift('?'+sub.retry);
+                    if(sub.retryType === '!') arr.plugins.unshift('!'+sub.retry);
                     return f;
                 }else{
                     const f = wrap(buildAtom(sub.name));
@@ -51,7 +53,12 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
             });
 
             const compiledPlugins = arr.plugins.map(name => {
-                if(name === 'nr'){
+                if(name.startsWith('?')){
+                    return _catch(parseInt(name.substring(1)));
+                }else if(name.startsWith('!')){
+                    return retry(parseInt(name.substring(1)));
+                }
+                else if(name === 'nr'){
                     return nr();
                 }else if(/^\d+$/.test(name)){
                     return repeat(parseInt(name));
