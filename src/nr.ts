@@ -1,4 +1,4 @@
-import { Next, FD } from '.';
+import { Next } from '.';
 
 export type MODE = "buffer"|"nobuffer"|"custom";
 

@@ -1,4 +1,4 @@
-import { FD, Next, Data } from '.';
+import { FD, Next } from '.';
 
 export default (mode: "all"|"race"|"allSettled" = "all") => async (next: Next, pipes: FD[]) => {
     
