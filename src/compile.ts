@@ -86,7 +86,7 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                     return s(pipe)(data);
                 }
                 const plugin = compiledPlugins[i];
-                return plugin(_next, pipe);
+                return plugin(_next, pipe, data);
             }
 
             return (data: Data) => {

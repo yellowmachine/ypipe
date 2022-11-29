@@ -6,7 +6,7 @@ export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"})
     let exited = true;
     const buffer: Next[] = [];
 
-    return async function (next: Next, pipe: FD[]){
+    return async function (next: Next){
         if(exited){
             exited = false;
             let ret;

@@ -19,7 +19,7 @@ export type PluginBase = (pipes: FD[]) => FD;
 export type Pipe ={pipe: FD[]|null}; 
 
 export type Arg = {pipe: FD[]/*, done: (err?: boolean)=>void*/};
-export type Plugin = {[key: string]: (arg: Next)=>Promise<any>};
+export type Plugin = {[key: string]: (arg: Next, pipe: FD[], data: Data)=>Promise<any>};
 type FPipe = (arg: FArray) => FArray;
 
 //export type Next = {next: () => any};
