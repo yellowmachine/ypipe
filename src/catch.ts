@@ -1,6 +1,6 @@
-import { Next } from '.';
+import { Next, FD, Data } from '.';
 
-export default (n: number) => async (next: Next) => {
+export default (n: number) => async (next: Next, pipe: FD[], data: Data) => {
     do{
         try{
             n--;

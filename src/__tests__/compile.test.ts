@@ -160,3 +160,19 @@ test("run w'^'[b,c]x", async ()=>{
     const result = await cmp("");
     expect(result).toEqual("ax");
 });
+
+test("run a[b?|c]x", async ()=>{
+
+    const a = g("a");
+    const b = g("b!");
+    const c = g("c");
+    const x = g("x");
+
+    const t = "a[b?|c]x";
+    const cmp = compile(t, {
+        namespace: {a, b, c, x}
+    });
+
+    const result = await cmp("");
+    expect(result).toEqual(null);
+});
