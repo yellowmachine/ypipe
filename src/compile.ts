@@ -42,9 +42,9 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
 
             const pipes = arr.c.map(sub=>{
                 if(sub.type === 'array'){
+                    if(sub.retryType === '?') sub.plugins.unshift('?'+sub.retry);
+                    if(sub.retryType === '!') sub.plugins.unshift('!'+sub.retry);
                     const f = buildArray(sub);
-                    if(sub.retryType === '?') arr.plugins.unshift('?'+sub.retry);
-                    if(sub.retryType === '!') arr.plugins.unshift('!'+sub.retry);
                     return f;
                 }else{
                     if(sub.catched){
