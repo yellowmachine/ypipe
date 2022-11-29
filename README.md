@@ -18,16 +18,26 @@ You can compile and run tasks. Example of expressions:
 Example of compiling and running:
 
 ```ts
-const {run, compile} = require("ypipe");
+const {run, compile, w} = require("ypipe");
 
-await run("a|'[b,c]", options, initialData);
+function a({data}){
+    return ...
+}
+...
+
+const options = {
+    namespace: {a, b, c}, 
+    plugins: {w: w(["./tests/*.js", "./schema/*.*"])}
+};
+
+await run("w'[a|'[b,c]]", options, initialData);
 
 //or
-const f = compile("a|'[b,c]", options);
+const f = compile("w'[a|'[b,c]]", options);
 
 //then
-await f("some data");
-await f("other data");
+await f("some initial data");
+await f("some other data");
 ```
 
 ## Producer / Consumer

@@ -1,7 +1,7 @@
 {
   "name": "ypipe",
   "version": "0.1.0",
-  "description": "pipe tasks",
+  "description": "compile and run pipelines",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
