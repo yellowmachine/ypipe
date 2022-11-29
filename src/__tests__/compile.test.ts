@@ -174,5 +174,5 @@ test("run a[b?|c]x", async ()=>{
     });
 
     const result = await cmp("");
-    expect(result).toEqual(null);
+    expect(result).toEqual("undefinedcx");
 });

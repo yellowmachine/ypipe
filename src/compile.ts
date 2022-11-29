@@ -47,13 +47,19 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                     if(sub.retryType === '!') arr.plugins.unshift('!'+sub.retry);
                     return f;
                 }else{
-                    //const _next = (_pipe?: FD[], _data?: Data) => next(i+1, _pipe || pipe, _data || data);
-                    const f = wrap(buildAtom(sub.name));
                     if(sub.catched){
-                        const plugin = _catch(1);
-                        return (data: Data) => plugin(() => s([f])(data), [f], data);
+                        sub.catched = false;
+                        return buildArray({
+                            type: "array",
+                            retryType: "?",
+                            retry: 1,
+                            c: [sub],
+                            plugins: ['nr']
+                        });
+                    }else{
+                        const f = wrap(buildAtom(sub.name));
+                        return f;
                     }
-                    return f;
                 }
             });
 
