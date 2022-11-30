@@ -1,8 +1,6 @@
-import {DEBUG as wDebug} from '../watch';
 import { DEBUG, g, compile } from '../index';
 
 DEBUG.v = false;
-wDebug.v = false;
 
 test("plugin namespace error", async ()=> {
     

@@ -1,6 +1,4 @@
-import watch from '../watch';
 import { DEBUG, compile, g, Data } from '../index';
-import join from '../join';
 import nr from '../nr';
 
 DEBUG.v = false;
@@ -142,23 +140,6 @@ test("run a[b|c]?x", async ()=>{
     });
     const result = await cmp("");
     expect(result).toEqual(null);
-});
-
-test("run w'^'[b,c]x", async ()=>{
-
-    const a = g("a");
-    const b = g("b");
-    const c = (data: Data) => {data.ctx.close(false);};
-    const x = g("x");
-
-    const t = "w'^'[b,a|c]x";
-    const cmp = compile(t, {
-        namespace: {a, b, c, x},
-        plugins: {w: watch(["*.js"])}
-    });
-
-    const result = await cmp("");
-    expect(result).toEqual("ax");
 });
 
 test("run a[b?|c]x", async ()=>{
