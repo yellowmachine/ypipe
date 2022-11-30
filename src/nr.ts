@@ -11,14 +11,10 @@ export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"})
             exited = false;
             let ret;
             for(;;){
-                try{
-                    ret = await next();
-                    const _next = buffer.pop();
-                    if(_next) next = _next;
-                    else break;
-                }catch(err){
-                    //
-                }
+                ret = await next();
+                const _next = buffer.pop();
+                if(_next) next = _next;
+                else break;
             }
             exited = true;
             return ret;

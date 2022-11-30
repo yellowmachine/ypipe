@@ -47,72 +47,19 @@ A producer / consumer takes some data from previous producer and return some dat
 ```ts
 function myProducerConsumer({data, ctx}){
     if(data === 'x') return 'yuju';
-
+    if(...) ctx.close(); //that closes for example a closer watch
     return null; // that stops the pipeline
 }
 ```
 
 ```ctx``` is a special object with a method ```close``` that you can call to close closest plugin. The plugin watch that watches files and run a pipe when there's a change, can be closed this way.
 
-```ts
-function dgraph(config){
-    return async function(){
-        const url = `${config.url}:${config.port}/admin`
-        const name = config.schema
-        
-        let data = ""
-        try{
-            if(name.endsWith(".js")) data = requireUncached(name)
-            else data = await loadSchema(name)
-        }catch(err){
-            console.log(err)
-            throw err
-        }
-        data = data + config.schemaFooter(config)
-        const schema = data.toString()
-        console.log(data)
-        
-        while(true){       
-            let response = await axios({
-                url,
-                method: 'post',
-                data: {
-                    query: `mutation($schema: String!) {
-                        updateGQLSchema(input: { set: { schema: $schema } }) {
-                        gqlSchema {
-                            schema
-                        }
-                        }
-                    }`,
-                    variables: {
-                        schema,
-                    },
-                },
-            })
-
-            if(!response.data.errors){
-                //break
-                return 'ok';
-            }
-
-            console.log(response.data.errors)
-            
-            if(!response.data.errors[0].message.startsWith('failed to lazy-load GraphQLschema')){                
-                throw new Error(response.data.errors[0].message)
-            }
-            await sleep(2000)
-        }
-    }
-}
-```
-
-
 ## Plugins
 
 A plugin is a function like this:
 
 ```ts
-export default (var_a: string, var_b: number, /*etc.. my setup*/) => async (next: Next, pipe: FD[], data: Data ) => {
+export default (var_a: string, var_b: number, /*etc..*/) => async (next: Next, pipe: FD[], data: Data ) => {
 
 //Example:
 //watch plugin
@@ -126,7 +73,7 @@ export default (files: string[]) => async (next: Next, pipe: FD[], data: Data ) 
 
 import { Next } from '.';
 
-export type MODE = "buffer"|"nobuffer"|"custom";
+export type MODE = "buffer"|"nobuffer";
 
 export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"}) => {
     let exited = true;
@@ -137,14 +84,10 @@ export default ({mode, size}: {mode?: MODE, size?: number} = {mode: "nobuffer"})
             exited = false;
             let ret;
             for(;;){
-                try{
-                    ret = await next();
-                    const _next = buffer.pop();
-                    if(_next) next = _next;
-                    else break;
-                }catch(err){
-                    //
-                }
+                ret = await next();
+                const _next = buffer.pop();
+                if(_next) next = _next;
+                else break;
             }
             exited = true;
             return ret;
@@ -200,7 +143,7 @@ function test(){
     npm().run('tap');
 }
 
-const {up, down} = docker({name: "my-container-dgraph-v17", 
+const {up, down} = docker({name: "my-container-dgraph", 
                            image: "dgraph/standalone:master", 
                            port: "8080"
                         })
