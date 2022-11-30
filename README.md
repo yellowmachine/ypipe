@@ -18,7 +18,8 @@ You can compile and run tasks. Example of expressions:
 Example of compiling and running:
 
 ```ts
-const {run, compile, w} = require("ypipe");
+const {run, compile} = require("ypipe");
+const { w } = require("ypipe-watch");
 
 function a({data}){
     return ...
@@ -130,20 +131,19 @@ export default (mode: "all"|"race"|"allSettled" = "all") => async (next: Next, p
 
 A real [example](https://github.com/yellowmachine/example-ypipe): 
 
-```ts
-const {compile, w, SHOW_QUIT_MESSAGE} = require("ypipe")
+```js
+const {compile} = require("ypipe")
+const { w } = require("ypipe-watch");
 const npm = require('npm-commands')
 const {docker} = require('./docker')
 const {dgraph} = require('./dgraph')
 const config = require("./config")
 
-SHOW_QUIT_MESSAGE.v = true
-
 function test(){
     npm().run('tap');
 }
 
-const {up, down} = docker({name: "my-container-dgraph", 
+const {up, down} = docker({name: "my-container-dgraph-v2.9", 
                            image: "dgraph/standalone:master", 
                            port: "8080"
                         })
