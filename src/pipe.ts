@@ -22,7 +22,6 @@ export const pipe =  (tasks: FD[]) => async (data: Data) => {
         if(DEBUG.v)
             // eslint-disable-next-line no-console
             console.log(err);
-        if(close) close(true); 
         throw err;
     }
 };

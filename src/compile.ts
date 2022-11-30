@@ -51,10 +51,16 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                         sub.catched = false;
                         return buildArray({
                             type: "array",
-                            retryType: "?",
-                            retry: 1,
-                            c: [sub],
-                            plugins: ['nr']
+                            c: [
+                                {
+                                    type: "array",
+                                    c: [sub],
+                                    retryType: "?",
+                                    retry: 1,
+                                    plugins: ['s']
+                                }
+                            ],
+                            plugins: ['s']
                         });
                     }else{
                         const f = wrap(buildAtom(sub.name));
@@ -97,9 +103,7 @@ export default (raw: string, opts: {namespace: Namespace, plugins: Plugin}) => {
                 }
             }
 
-            return (data: Data) => {
-                return next(0, pipes, data);
-            };
+            return (data: Data) => next(0, pipes, data);
         };
 
         function build(arr: ParsedArray): FD{

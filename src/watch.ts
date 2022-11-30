@@ -9,7 +9,7 @@ export const DEBUG = {v: false};
 emitKeypressEvents(process.stdin);
 process.stdin.setRawMode(true);
 
-export default (files: string[]) => async (next: Next, pipe: FD[], data: Data ) => {
+export default (files: string[]) => (next: Next, pipe: FD[], data: Data ) => {
 
     const quit = data.ctx.close;
 
@@ -60,11 +60,7 @@ export default (files: string[]) => async (next: Next, pipe: FD[], data: Data ) 
                 // eslint-disable-next-line no-console
                 console.log("Press " + q + " to quit!");
         }catch(err){
-            //if(err instanceof Error && err.message.startsWith("exit")) throw err;
-            if(DEBUG.v && err instanceof Error && !err.message.startsWith("no log"))
-                // eslint-disable-next-line no-console
-                console.log(err);
-            //throw err;
+            //
         }
     }
 
@@ -80,6 +76,6 @@ export default (files: string[]) => async (next: Next, pipe: FD[], data: Data ) 
     }else{
         exitedRun();
     }
-    return p;
 
+    return p;
 };
